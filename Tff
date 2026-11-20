@@ -1,0 +1,83 @@
+
+`timescale 1ns/1ps
+
+module TFF (T, q, qb, clk, rst);
+
+input logic T;
+input bit rst;
+output logic q, qb;
+input logic clk;
+
+always_ff @(posedge clk)
+begin
+    if (!rst)
+        q <= 1'b0;
+    else
+    begin
+        if (T == 1'b0)
+            q <= q;
+        else
+            q <= ~q;
+    end
+
+    qb <= ~q;
+end
+
+endmodule
+
+
+//testbench
+`timescale 1ns/1ps
+
+module TFF_TB;
+
+logic clk, T, q, qb, q1, q1b, rst;
+
+TFF P(T, q, qb, clk, rst);
+
+initial
+    clk = 1'b0;
+
+always
+    #20ns clk = ~clk;
+
+initial
+begin
+    rst = 1'b0;
+    T = 1'b0;
+    q1 = 1'b0;
+
+    #100ns rst = 1'b1;
+
+    for (int i = 0; i <= 1; i++)
+        T = i;
+
+    #100ns $finish;
+end
+
+always @(posedge clk)
+begin
+    if (!rst)
+        q1 <= 1'b0;
+    else if (T == 1'b0)
+        q1 <= q1;
+    else
+        q1 <= ~q1;
+end
+
+assign q1b = ~q1;
+
+always @(negedge clk)
+begin
+    if (q === q1 && qb === q1b)
+        $display("Success: T Flip-Flop output matched");
+    else
+        $display("Fail: T Flip-Flop output not matched");
+end
+  initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+end
+
+
+endmodule
