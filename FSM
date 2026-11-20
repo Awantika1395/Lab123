@@ -64,20 +64,25 @@ endmodule
 //Testbench
 
 
+
 module seq_101_tb;
 
 bit clk,rst,x;
-reg dout;
+wire dout;
 
 seq_101 f1(clk,rst,x,dout);
 
 initial
 begin
+    clk=0;
     rst=1;
+
     #200 rst=0;
 
     repeat (30)
         #38 x=$random;
+
+    #100 $finish;
 end
 
 initial
@@ -86,6 +91,10 @@ begin
         #20 clk=~clk;
 end
 
+initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+    #1000 $finish;
+end
+
 endmodule
-
-
