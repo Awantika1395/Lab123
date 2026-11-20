@@ -1,0 +1,69 @@
+/DUT
+module assignment_operator;
+
+reg [31:0] a = 100;
+
+initial begin
+
+    $display("a = %h", a);
+
+    a += 4;
+    $display("a += 4 := %h", a);
+
+    a -= 4;
+    $display("a -= 4 := %h", a);
+
+    a *= 4;
+    $display("a *= 4 := %h", a);
+
+    a /= 4;
+    $display("a /= 4 := %h", a);
+
+    a %= 17;
+    $display("a %%= 17 := %h", a);
+
+    a &= 16'hFFFF;
+    $display("a &= 16'hFFFF := %h", a);
+
+    a |= 16'hFFFF;
+    $display("a |= 16'hFFFF := %h", a);
+
+    a ^= 16'hAAAA;
+    $display("a ^= 16'hAAAA := %h", a);
+
+    a <<= 4;
+    $display("a <<= 4 := %h", a);
+
+    a >>= 4;
+    $display("a >>= 4 := %h", a);
+
+    a <<<= 14;
+    $display("a <<<= 14 := %h", a);
+
+    a >>>= 14;
+    $display("a >>>= 14 := %h", a);
+
+end
+
+endmodule
+
+//tesytbench
+
+module tb;
+
+assignment_operator dut();
+
+initial begin
+    #10;
+    $display("Simulation completed");
+    $finish;
+end
+
+initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+    #1000 $finish;
+end
+
+endmodule
+
