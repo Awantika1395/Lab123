@@ -1,0 +1,63 @@
+//
+`timescale 1ns/1ps
+
+module dff(d,clk,q,qb);
+
+input bit d,clk;
+output bit q,qb;
+
+always_ff @(posedge clk)
+begin
+    q = d;
+    qb = ~q;
+end
+
+endmodule
+
+
+`timescale 1ns/1ps
+
+module dff_tb();
+
+bit d,clk;
+bit q,qb,q1,qb1;
+
+dff p4(d,clk,q,qb);
+
+initial begin
+    d=0;
+    forever
+        #350 d=~d;
+end
+
+initial begin
+    clk=0;
+    forever
+        #30 clk=~clk;
+end
+
+always @(posedge clk)
+begin
+  
+
+    case(d)
+        1'b0: q1=0;
+        1'b1: q1=1;
+    endcase
+
+    qb1=~q1;
+
+    if(q==q1 && qb==qb1)
+        $display("Success: d=%b q=%b qb=%b q1=%b qb1=%b",d,q,qb,q1,qb1);
+    else
+        $display("Fail: d=%b q=%b qb=%b q1=%b qb1=%b",d,q,qb,q1,qb1);
+
+end
+
+initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+    #1000 $finish;
+end
+
+endmodule
