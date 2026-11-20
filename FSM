@@ -1,0 +1,91 @@
+//dut
+module seq_101 (clk,rst,x,dout);
+
+input clk,rst,x;
+output reg dout;
+
+parameter GN=2'b00,
+          GOT1=2'b01,
+          GOT10=2'b10;
+
+reg [1:0]state,pstate,nstate;
+
+always @(negedge clk)
+begin
+    pstate<=nstate;
+end
+
+always @(posedge clk)
+begin
+    if(rst)
+        nstate=GN;
+    else
+    begin
+        unique case(pstate)
+
+        GN:begin
+            if(x)
+                nstate=GOT1;
+            else
+                nstate=GN;
+
+            dout=0;
+        end
+
+        GOT1:begin
+            if(x==1'b0)
+                nstate=GOT10;
+            else
+                nstate=GOT1;
+
+            dout=0;
+        end
+
+        GOT10:begin
+            if(x)
+            begin
+                nstate=GOT1;
+                dout=1'b1;
+            end
+            else
+            begin
+                nstate=GN;
+                dout=0;
+            end
+        end
+
+        endcase
+    end
+end
+
+endmodule
+
+
+//Testbench
+
+
+module seq_101_tb;
+
+bit clk,rst,x;
+reg dout;
+
+seq_101 f1(clk,rst,x,dout);
+
+initial
+begin
+    rst=1;
+    #200 rst=0;
+
+    repeat (30)
+        #38 x=$random;
+end
+
+initial
+begin
+    forever
+        #20 clk=~clk;
+end
+
+endmodule
+
+
