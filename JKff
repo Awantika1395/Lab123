@@ -1,0 +1,78 @@
+
+`timescale 1ns/10ps
+
+module jkff1(clk,jk,q,qb);
+
+input logic clk;
+input logic [1:0] jk;
+output logic q,qb;
+
+always_ff @(posedge clk)
+begin
+    if(jk == 2'b00)
+        q <= q;
+    else if(jk == 2'b01)
+        q <= 1'b0;
+    else if(jk == 2'b10)
+        q <= 1'b1;
+    else
+        q <= ~q;
+
+    qb <= ~q;
+end
+
+endmodule
+
+//testbench
+
+`timescale 1ns/10ps
+
+module JKff_tb;
+
+logic clk,j,k,q,qb,q1,q1b;
+
+jkff1 n1(clk,{j,k},q,qb);
+
+initial begin
+    clk = 0;
+    j = 0;
+    k = 0;
+    q1 = 0;
+    q1b = 1;
+
+    #100 {j,k} = 2'b00;
+    #100 {j,k} = 2'b01;
+    #100 {j,k} = 2'b10;
+    #100 {j,k} = 2'b11;
+    #100 $finish;
+end
+
+always #30 clk = ~clk;
+
+always @(posedge clk)
+begin
+    case({j,k})
+        2'b00: q1 = q1;
+        2'b01: q1 = 0;
+        2'b10: q1 = 1;
+        2'b11: q1 = ~q1;
+    endcase
+
+    q1b = ~q1;
+end
+
+always @(negedge clk)
+begin
+    if(q == q1 && qb == q1b)
+        $display("Success: J=%b K=%b Q=%b QB=%b",j,k,q,qb);
+    else
+        $display("Fail: J=%b K=%b Q=%b QB=%b",j,k,q,qb);
+end
+
+initial begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+end
+
+endmodule
+
