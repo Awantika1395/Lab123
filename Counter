@@ -1,0 +1,52 @@
+
+`timescale 1ns/1ps
+
+module counter_10(input clk,rst, output logic [3:0] count);
+
+always @(posedge clk)
+begin
+    if(rst)
+        count <= 0;
+    else if(count == 9)
+        count <= 0;
+    else
+        count <= count + 1;
+
+    $display("count=%b",count);
+end
+
+endmodule
+
+//testbench 
+
+`timescale 1ns/1ps
+
+module counter_10_tb();
+
+bit clk;
+logic rst;
+logic [3:0] count;
+
+counter_10 c1(clk,rst,count);
+
+always #5 clk = ~clk;
+
+initial
+begin
+    rst = 1;
+
+    #20 rst = 0;
+
+    #200 rst = 1;
+
+    #20 rst = 0;
+end
+
+initial
+begin
+    $dumpfile("dump.vcd");
+    $dumpvars;
+    #500 $finish;
+end
+
+endmodule
